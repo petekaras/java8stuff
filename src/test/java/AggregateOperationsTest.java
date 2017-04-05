@@ -30,35 +30,38 @@ public class AggregateOperationsTest {
 
     @Test
     /**
-     * Filter only toys
+     * FILTER only toys
      */
     public void filter() throws Exception {
-        long count = list.stream()
-                .filter(o -> o.getType() == Type.NEWSPAPER)
-                .count();
+        List<Transaction> list2 = list.stream()
+                .filter(o -> o.getType() == Type.TOY).collect(Collectors.toList());
 
-        Assert.assertEquals(1,count);
+        Assert.assertEquals("[kite, xbox]",printNames(list2));
     }
 
     @Test
     /**
-     * Map onto a another collection
+     * MAP onto a another collection
      */
     public void map(){
-        String[] list2 = list.stream()
-                .map(o -> "name:" +o.getName().toString())
-                .toArray(String[]::new);
-        Assert.assertEquals("[name:tomatoe, name:times, name:kite, name:xbox, name:potatoe]", Arrays.toString(list2));
+        List<String> list2 = list.stream()
+                .map(o -> "name:" +o.getName().toString()).collect(Collectors.toList());
+        Assert.assertEquals("[name:tomatoe, name:times, name:kite, name:xbox, name:potatoe]",Arrays.toString(list2.toArray()));
     }
 
     @Test
     /**
-     * Most expensive first
+     * SORTED Most expensive first
      */
     public void order(){
         List<Transaction> list2 = list.stream()
                 .sorted(Comparator.comparing(Transaction::getValue)).collect(Collectors.toList());
-        Assert.assertEquals("[xbox, times, tomatoe, kite, potatoe]", Arrays.toString(list2.stream().map(o -> o.getName()).toArray(String[]::new)));
+        Assert.assertEquals("[xbox, times, tomatoe, kite, potatoe]", printNames(list2));
+    }
+
+
+    private String printNames(List<Transaction> result){
+        return Arrays.toString(result.stream().map(o -> o.getName()).toArray(String[]::new));
     }
 
 }
