@@ -1,4 +1,5 @@
-### Examples
+#Examples
 
 ##Streams
-[Aggregate operations](./test/AggregateOperationsTest.java)
+
+[Aggregate operations](./src/test/AggregateOperationsTest.java)
