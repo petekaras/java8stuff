@@ -4,10 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import karas.peter.domain.Transaction.Type;
@@ -23,7 +20,7 @@ public class AggregateOperationsTest {
     public void setUp(){
         list.add(new Transaction("tomatoe",new BigDecimal("20.0"),Type.GROCERY));
         list.add(new Transaction("times",new BigDecimal("10.5"),Type.NEWSPAPER));
-        list.add(new Transaction("kite",new BigDecimal("20.0"),Type.TOY));
+        list.add(new Transaction("kite",new BigDecimal("48.9"),Type.TOY));
         list.add(new Transaction("xbox",new BigDecimal("10.0"),Type.TOY));
         list.add(new Transaction("potatoe",new BigDecimal("31.5"),Type.GROCERY));
     }
@@ -31,6 +28,7 @@ public class AggregateOperationsTest {
     @Test
     /**
      * FILTER only toys
+     * filter(predicate) where predicate = a function taht returns true or false
      */
     public void filter() throws Exception {
         List<Transaction> list2 = list.stream()
@@ -38,6 +36,7 @@ public class AggregateOperationsTest {
 
         Assert.assertEquals("[kite, xbox]",printNames(list2));
     }
+
 
     @Test
     /**
@@ -56,7 +55,97 @@ public class AggregateOperationsTest {
     public void order(){
         List<Transaction> list2 = list.stream()
                 .sorted(Comparator.comparing(Transaction::getValue)).collect(Collectors.toList());
-        Assert.assertEquals("[xbox, times, tomatoe, kite, potatoe]", printNames(list2));
+        Assert.assertEquals("[xbox, times, tomatoe, potatoe, kite]", printNames(list2));
+    }
+
+    /**
+     * REDUCE all elements to a concatenated string
+     * note that these are sometimes called terminal operations as they dont return a stream, but complete a pipeline
+     * of streams.
+     * sum, average and count are all reduction functions that come as part of the streams API.
+     */
+    @Test
+    public void reduce(){
+       String result = list.stream()
+               .map(e->e.getName())
+               .reduce((a,b) -> a + ","+ b)
+               .get();
+
+        Assert.assertEquals("tomatoe,times,kite,xbox,potatoe",result);
+    }
+
+    /**
+     * REDUCE : get the maximum value
+     */
+    @Test
+    public void reduceMaxValue(){
+        BigDecimal result = list.stream()
+                .map(e->e.getValue())
+                .reduce(BigDecimal::max)
+                .get();
+
+        Assert.assertEquals(48.9,result.doubleValue(),0);
+    }
+
+    @Test
+    public void forEach(){
+        StringBuilder sb = new StringBuilder();
+        list.forEach(c -> sb.append(c.getName()));
+        Assert.assertEquals("tomatoetimeskitexboxpotatoe",sb.toString());
+
+    }
+
+    /**
+     * LIMIT : get only the first toy
+     */
+    @Test
+    public void limit(){
+        List<Transaction> list2 = list.stream()
+                .filter(o -> o.getType() == Type.TOY)
+                .limit(1)
+                .collect(Collectors.toList());
+
+        Assert.assertEquals("[kite]",printNames(list2));
+
+    }
+
+    /**
+     * Skip the first toy
+     */
+    @Test
+    public void skip(){
+        List<Transaction> list2 = list.stream()
+                .filter(o -> o.getType() == Type.TOY)
+                .skip(1)
+                .collect(Collectors.toList());
+
+        Assert.assertEquals("[xbox]",printNames(list2));
+
+    }
+
+    @Test
+    public void anyMatch(){
+        boolean match = list.stream()
+                .anyMatch(o -> o.getName().contains("x"));
+        Assert.assertEquals(true,match);
+    }
+
+    @Test
+    public void noneMatch(){
+        boolean match = list.stream()
+                .noneMatch(o -> o.getName().contains("x"));
+        Assert.assertEquals(false,match);
+    }
+
+    /**
+     * Find any toy that contains the character o
+     */
+    @Test
+    public void findAny(){
+       Optional<Transaction> result = list.stream()
+               .filter(o -> o.getName().contains("o") && o.getType() == Type.TOY)
+               .findAny();
+        Assert.assertEquals("xbox",result.get().getName());
     }
 
 
