@@ -14,16 +14,9 @@ import static org.junit.Assert.*;
 /**
  * Examples of basic stream operations
  */
-public class AggregateOperationsTest {
-    List<Transaction> list = new ArrayList();
-    @Before
-    public void setUp(){
-        list.add(new Transaction("tomatoe",new BigDecimal("20.0"),Type.GROCERY));
-        list.add(new Transaction("times",new BigDecimal("10.5"),Type.NEWSPAPER));
-        list.add(new Transaction("kite",new BigDecimal("48.9"),Type.TOY));
-        list.add(new Transaction("xbox",new BigDecimal("10.0"),Type.TOY));
-        list.add(new Transaction("potatoe",new BigDecimal("31.5"),Type.GROCERY));
-    }
+public class AggregateOperationsTest extends BaseTest {
+
+
 
     @Test
     /**
@@ -33,7 +26,6 @@ public class AggregateOperationsTest {
     public void filter() throws Exception {
         List<Transaction> list2 = list.stream()
                 .filter(o -> o.getType() == Type.TOY).collect(Collectors.toList());
-
         Assert.assertEquals("[kite, xbox]",printNames(list2));
     }
 
