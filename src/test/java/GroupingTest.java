@@ -20,7 +20,9 @@ public class GroupingTest extends BaseTest{
                         Transaction::getType,
                         Collectors.counting()
                 ));
-        Assert.assertEquals("[{NEWSPAPER=1, GROCERY=2, TOY=2}]",Arrays.asList(result).toString());
+        Assert.assertEquals(new Long(2),result.get(Transaction.Type.GROCERY));
+        Assert.assertEquals(new Long(2),result.get(Transaction.Type.TOY));
+        Assert.assertEquals(new Long(1),result.get(Transaction.Type.NEWSPAPER));
     }
 
 
